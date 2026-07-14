@@ -8,7 +8,7 @@ No cloud, no data selling – just endless free laughs generated right here on y
 
 LocalLaughs is a lightweight, open‑source command‑line application that delivers jokes straight from your own computer. It stores a curated database of jokes locally and can generate new punchlines using simple pattern matching or optional AI models, all while keeping your data private.
 
-Zero external dependencies – runs on any machine with Python 3.8+ (or Rust binary for faster execution).\nNo internet required – every joke is generated locally.\nOpen‑source & community‑driven – feel free to add more jokes, tweak the engine or contribute new features.
+Zero external dependencies – runs on any machine with Python 3.8+ (or Rust binary for faster execution).\nNo internet required – every joke is generated locally.
 
 ## 🚀 Features
 
@@ -16,7 +16,6 @@ Zero external dependencies – runs on any machine with Python 3.8+ (or Rust bin
 |---------|-------------|
 | ⚡️ Fast | Pre‑compiled binary (Rust) runs in <10 ms per joke. |
 | 🤖 AI‑powered (optional) | Plug in a local LLM (e.g., GPT‑Neo, Llama) to generate creative punchlines. |
-| 📚 Extensible database | Add jokes via JSON or CSV; the engine will automatically pick them up. |
 | 🔒 Privacy first | No telemetry, no cloud sync, no data collection. |
 | 🎨 Customizable output | Colorized terminal output, Markdown support for sharing. |
 
@@ -29,11 +28,6 @@ Zero external dependencies – runs on any machine with Python 3.8+ (or Rust bin
 python -m venv .venv
 source .venv/bin/activate   # On Windows: .\.venv\Scripts\activate
 
-# Install the package from PyPI
-pip install locallaughs
-
-# Run it!
-locallaughs
 ```
 
 ### Rust binary (for maximum speed)
@@ -49,19 +43,7 @@ Tip: If you want the AI‑powered mode, set the environment variable `LLM_PATH` 
 
 ## 🎯 Usage
 
-```bash
-# Basic joke
-locallaughs
 
-# Get a random joke from a specific category
-locallaughs --category programming
-
-# Generate a new punchline for an existing setup
-locallaughs --setup "Why did the scarecrow win an award?"
-
-# Show help
-locallaughs --help
-```
 
 The output will look something like:
 
@@ -69,23 +51,6 @@ The output will look something like:
 🤖 LocalLaughs:
   Setup: Why did the scarecrow win an award?
   Punchline: Because he was outstanding in his field!
-```
-
-## 📚 Adding Your Own Jokes
-
-Create a JSON file (e.g., `my_jokes.json`):
-
-```json
-[
-  {
-    "setup": "Why don't programmers like nature?",
-    "punchline": "It has too many bugs."
-  },
-  {
-    "setup": "How do you comfort a JavaScript bug?",
-    "punchline": "You console it!"
-  }
-]
 ```
 
 Place the file in the `jokes/` directory of your LocalLaughs installation or specify its path with `--file`.
