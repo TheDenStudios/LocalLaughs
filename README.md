@@ -1,84 +1,278 @@
 # LocalLaughs
 
-The private, local‑first joke engine for your machine
+LocalLaughs is a private, local-first JokeAPI and joke engine built with Flask.
 
-No cloud, no data selling – just endless free laughs generated right here on your device.
+No cloud dependency, no telemetry, no account system by default. The API serves and manages a local SQLite joke collection, seeded from JSON, and includes a small template-based generator that runs fully on your machine.
 
-## What is LocalLaughs?
+## Features
 
-LocalLaughs is a lightweight, open‑source command‑line application that delivers jokes straight from your own computer. It stores a curated database of jokes locally and can generate new punchlines using simple pattern matching or optional AI models, all while keeping your data private.
+- Flask app factory structure
+- Versioned REST API under `/api/v1`
+- Local SQLite joke storage
+- JSON seed data for first boot
+- Template-based local joke generation
+- CLI companion via `python -m locallaughs`
+- Random joke endpoint with filters
+- Joke CRUD endpoints
+- Category and tag endpoints
+- Health check endpoint
+- Pytest coverage for the main API behavior
 
-Zero external dependencies – runs on any machine with Python 3.8+ (or Rust binary for faster execution).\nNo internet required – every joke is generated locally.
-
-## 🚀 Features
-
-| Feature | Description |
-|---------|-------------|
-| ⚡️ Fast | Pre‑compiled binary (Rust) runs in <10 ms per joke. |
-| 🤖 AI‑powered (optional) | Plug in a local LLM (e.g., GPT‑Neo, Llama) to generate creative punchlines. |
-| 🔒 Privacy first | No telemetry, no cloud sync, no data collection. |
-| 🎨 Customizable output | Colorized terminal output, Markdown support for sharing. |
-
-## 📥 Installation
-
-### Python (recommended)
-
-```bash
-# Create a virtual environment (optional but recommended)
-python -m venv .venv
-source .venv/bin/activate   # On Windows: .\.venv\Scripts\activate
-
-```
-
-### Rust binary (for maximum speed)
-
-```bash
-git clone https://github.com/TheDenStudios/LocalLaughs.git
-cd LocalLaughs
-cargo build --release
-./target/release/locallaughs
-```
-
-Tip: If you want the AI‑powered mode, set the environment variable `LLM_PATH` to point at your local model.
-
-## 🎯 Usage
-
-
-
-The output will look something like:
+## Project Structure
 
 ```text
-🤖 LocalLaughs:
-  Setup: Why did the scarecrow win an award?
-  Punchline: Because he was outstanding in his field!
+.
+├── app.py
+├── data/
+│   └── jokes.json
+├── locallaughs/
+│   ├── __init__.py
+│   ├── __main__.py
+│   ├── cli.py
+│   ├── config.py
+│   ├── database.py
+│   ├── generator.py
+│   ├── repository.py
+│   ├── routes.py
+│   └── validation.py
+├── requirements.txt
+├── requirements-dev.txt
+└── tests/
+    └── test_api.py
 ```
 
-Place the file in the `jokes/` directory of your LocalLaughs installation or specify its path with `--file`.
+## Setup
 
-Restart (or re‑run) to see your jokes integrated.
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+```
 
-Pro tip: Use categories by adding a "category" field and run `locallaughs --category <name>`.
+## Run
 
-## 🤝 Contributing
+```bash
+flask --app app run --debug
+```
 
-We love contributions! Here’s how you can help:
+The API will run at:
 
-1. Fork the repo & clone locally.
-2. Make your changes (add jokes, fix bugs, improve docs).
-3. Run tests:
-   ```bash
-   pytest tests/
-   ```
-4. Open a pull request with a clear description.
+```text
+http://127.0.0.1:5000
+```
 
-Code of Conduct: Please refer to `CODE_OF_CONDUCT.md` before contributing.
+## CLI
 
-## 📜 License
+The CLI keeps the original "joke engine for your machine" feel while the Flask API handles HTTP use cases.
 
-This project is licensed under the MIT License – see the LICENSE file for details.
+```bash
+# Print a random local joke
+python -m locallaughs random
 
-## 📞 Need Help?
+# Filter by category or tag
+python -m locallaughs random --category programming
+python -m locallaughs random --tag testing
 
-Open an issue on GitHub if you run into bugs or have feature requests.\nDiscord/Slack: Join our community at #locallaughs (invite link in README).\nEmail: contact@example.com
+# Generate a local template joke
+python -m locallaughs generate --category tech --topic "LocalLaughs"
 
-Enjoy the laughs, keep them local! 😄
+# Generate and save the joke to SQLite
+python -m locallaughs generate --category dad --topic SQLite --save
+
+# Add a joke manually
+python -m locallaughs add \
+  --category programming \
+  --setup "Why did the API smile?" \
+  --punchline "It got a 200 OK." \
+  --tags api flask
+
+# Run the API server
+python -m locallaughs serve --port 5000
+```
+
+## Endpoints
+
+### Health
+
+```http
+GET /health
+```
+
+Example response:
+
+```json
+{
+  "status": "ok",
+  "service": "LocalLaughs"
+}
+```
+
+### List jokes
+
+```http
+GET /api/v1/jokes
+```
+
+Optional filters:
+
+- `category`
+- `language`
+- `safe=true|false`
+- `tag`
+
+Example:
+
+```bash
+curl "http://127.0.0.1:5000/api/v1/jokes?category=programming&safe=true"
+```
+
+### List categories
+
+```http
+GET /api/v1/categories
+```
+
+### List tags
+
+```http
+GET /api/v1/tags
+```
+
+### Random joke
+
+```http
+GET /api/v1/jokes/random
+```
+
+Example:
+
+```bash
+curl "http://127.0.0.1:5000/api/v1/jokes/random"
+```
+
+### Get one joke
+
+```http
+GET /api/v1/jokes/<joke_id>
+```
+
+Example:
+
+```bash
+curl "http://127.0.0.1:5000/api/v1/jokes/local-001"
+```
+
+### Create joke
+
+```http
+POST /api/v1/jokes
+Content-Type: application/json
+```
+
+Example:
+
+```bash
+curl -X POST "http://127.0.0.1:5000/api/v1/jokes" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "category": "programming",
+    "setup": "Why did the API smile?",
+    "punchline": "It got a 200 OK.",
+    "tags": ["api"],
+    "safe": true,
+    "language": "en"
+  }'
+```
+
+Required fields:
+
+- `category`
+- `setup`
+- `punchline`
+
+Optional fields:
+
+- `tags`
+- `safe`
+- `language`
+
+### Update joke
+
+```http
+PUT /api/v1/jokes/<joke_id>
+Content-Type: application/json
+```
+
+The payload uses the same fields as joke creation.
+
+### Delete joke
+
+```http
+DELETE /api/v1/jokes/<joke_id>
+```
+
+### Generate joke
+
+```http
+POST /api/v1/jokes/generate
+Content-Type: application/json
+```
+
+Example:
+
+```bash
+curl -X POST "http://127.0.0.1:5000/api/v1/jokes/generate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "category": "tech",
+    "topic": "LocalLaughs",
+    "save": false
+  }'
+```
+
+Supported generator categories:
+
+- `programming`
+- `dad`
+- `tech`
+
+Set `"save": true` to store the generated joke in the local SQLite database.
+
+## Data Format
+
+Jokes are stored in local SQLite at `data/locallaughs.sqlite3`.
+
+On first boot, the database is seeded from `data/jokes.json`:
+
+```json
+[
+  {
+    "id": "local-001",
+    "category": "programming",
+    "setup": "Why do Python developers prefer dark mode?",
+    "punchline": "Because light attracts bugs.",
+    "tags": ["python", "developer"],
+    "safe": true,
+    "language": "en"
+  }
+]
+```
+
+## Tests
+
+```bash
+pytest
+```
+
+## Roadmap
+
+- Add pagination for large joke collections
+- Add optional API key authentication
+- Add import/export tools for JSON and CSV joke files
+- Add OpenAPI documentation
+- Add optional local LLM generation backend
+
+## License
+
+MIT
+

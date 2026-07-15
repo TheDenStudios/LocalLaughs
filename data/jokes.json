@@ -1,0 +1,30 @@
+[
+  {
+    "id": "local-001",
+    "category": "programming",
+    "setup": "Why do Python developers prefer dark mode?",
+    "punchline": "Because light attracts bugs.",
+    "tags": ["python", "developer"],
+    "safe": true,
+    "language": "en"
+  },
+  {
+    "id": "local-002",
+    "category": "dad",
+    "setup": "Why did the coffee file a police report?",
+    "punchline": "It got mugged.",
+    "tags": ["dad-joke"],
+    "safe": true,
+    "language": "en"
+  },
+  {
+    "id": "local-003",
+    "category": "tech",
+    "setup": "Why was the router so calm?",
+    "punchline": "It knew how to handle traffic.",
+    "tags": ["networking"],
+    "safe": true,
+    "language": "en"
+  }
+]
+
